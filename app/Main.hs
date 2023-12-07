@@ -33,7 +33,7 @@ main = do
 
 runArgs :: Args -> IO ()
 runArgs RunDay {day, path} = runDay day path
-runArgs All = mapM_ (`runDay` Nothing) [1..]
+runArgs All = mapM_ (`runDay` Nothing) [1..length days]
 
 runDay :: Int -> Maybe String -> IO ()
 runDay day path = do

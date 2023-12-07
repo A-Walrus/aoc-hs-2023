@@ -1,4 +1,4 @@
-module Solutions.Day01 (solution) where
+module Solutions.Day01 (solution, part1, part2) where
 
 import Base
 import Data.Char (digitToInt, isDigit)
@@ -18,4 +18,30 @@ part1 = sum . map f
     f = (\l -> (10 * digitToInt (head l)) + digitToInt (last l)) . filter isDigit
 
 part2 :: Parsed -> Int
-part2 = undefined
+part2 = sum . map (\s -> (10 * firstDigit s) + lastDigit (reverse s))
+  where
+    firstDigit s@(x : xs)
+      | isDigit x = digitToInt x
+      | otherwise = case getPrefix s digits of
+          Just x -> x
+          _ -> firstDigit xs
+
+    lastDigit s@(x : xs)
+      | isDigit x = digitToInt x
+      | otherwise = case getPrefix s (map reverse digits) of
+          Just x -> x
+          _ -> lastDigit xs
+
+    getPrefix s = fmap (+ 1) . findIndex (`isPrefixOf` s)
+
+    digits =
+      [ "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine"
+      ]

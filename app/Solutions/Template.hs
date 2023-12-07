@@ -1,4 +1,4 @@
-module Solutions.DayXX (solution) where
+module Solutions.DayXX (solution, part1, part2) where
 
 import Base
 import Data.List
