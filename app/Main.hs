@@ -3,12 +3,14 @@
 import Base
 import Data.Maybe
 import qualified Solutions.Day01 as Day01
+import qualified Solutions.Day02 as Day02
 import System.Environment
 import Text.Printf
 
 days :: [String -> IO ()]
 days =
-  [ Day01.solution
+  [ Day01.solution,
+    Day02.solution
   ]
 
 data Args

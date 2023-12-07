@@ -1,4 +1,4 @@
-module Solutions.Day01 (solution, part1, part2) where
+module Solutions.Day01 (solution, part1, part2, parse) where
 
 import Base
 import Data.Char (digitToInt, isDigit)
