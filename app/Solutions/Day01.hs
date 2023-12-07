@@ -3,6 +3,7 @@ module Solutions.Day01 (solution, part1, part2) where
 import Base
 import Data.Char (digitToInt, isDigit)
 import Data.List
+import Data.Maybe (fromMaybe)
 
 solution :: String -> IO ()
 solution = run (Day parse part1 part2)
@@ -28,9 +29,7 @@ part2 = sum . map (\s -> (10 * firstDigit s) + lastDigit (reverse s))
 
     lastDigit s@(x : xs)
       | isDigit x = digitToInt x
-      | otherwise = case getPrefix s (map reverse digits) of
-          Just x -> x
-          _ -> lastDigit xs
+      | otherwise = fromMaybe (lastDigit xs) (getPrefix s (map reverse digits))
 
     getPrefix s = fmap (+ 1) . findIndex (`isPrefixOf` s)
 
