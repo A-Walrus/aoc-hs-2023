@@ -18,7 +18,11 @@ part1 :: Parsed -> Int
 part1 = sum . map score
   where
     score lists = if count lists == 0 then 0 else 2 ^ (count lists - 1)
-    count (a, b) = length (filter (`elem` a) b)
+
+count :: ([Int], [Int]) -> Int
+count (a, b) = length (filter (`elem` a) b)
 
 part2 :: Parsed -> Int
-part2 = undefined
+part2 cards = snd $ foldl (\(x : xs, sum) card -> (zipWith (+) xs (replicate (count card) x ++ repeat 0), sum + x)) (counts, 0) cards
+  where
+    counts = map (const 1) cards
