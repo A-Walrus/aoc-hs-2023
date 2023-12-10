@@ -12,7 +12,7 @@ part1 :: String -> Int
 part1 = product . map margin . parse
   where
     parse :: String -> [(Int, Int)]
-    parse = map (\[a, b] -> (a, b)) . transpose . map (map read . tail . words) . lines
+    parse = map tuplify . transpose . map (map read . tail . words) . lines
 
 
 margin :: (Int, Int) -> Int

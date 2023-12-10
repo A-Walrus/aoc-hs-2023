@@ -1,12 +1,12 @@
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Base where
 
 import Data.Bifunctor
 import Debug.Trace
 
-debug :: Show a => String -> a -> a
+debug :: (Show a) => String -> a -> a
 debug s v = trace (s ++ ": " ++ show v) v
 
 dMap f = bimap f f
@@ -22,8 +22,8 @@ y = snd
 x :: Pos -> Int
 x = fst
 
-tuplify :: [a] -> (a,a)
-tuplify [a,b] = (a,b)
+tuplify :: [a] -> (a, a)
+tuplify [a, b] = (a, b)
 
 data Day a b c = Day {parse' :: String -> a, part1' :: a -> b, part2' :: a -> c}
 
@@ -31,9 +31,9 @@ run :: (Print b, Print c) => Day a b c -> String -> IO ()
 run Day {parse', part1', part2'} s = do
   let parsed = parse' s
   putStr "Part 1: "
-  putStrLn $ string  (part1' parsed)
+  putStrLn $ string (part1' parsed)
   putStr "Part 2: "
-  putStrLn $ string  (part2' parsed)
+  putStrLn $ string (part2' parsed)
 
 dummySolution :: String -> IO ()
 dummySolution = const (putStrLn "Dummy Solution")
@@ -49,4 +49,3 @@ instance Print Int where
 
 instance Print Integer where
   string = show
-
