@@ -22,6 +22,9 @@ y = snd
 x :: Pos -> Int
 x = fst
 
+tuplify :: [a] -> (a,a)
+tuplify [a,b] = (a,b)
+
 data Day a b c = Day {parse' :: String -> a, part1' :: a -> b, part2' :: a -> c}
 
 run :: (Print b, Print c) => Day a b c -> String -> IO ()
