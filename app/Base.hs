@@ -5,6 +5,8 @@ module Base where
 
 import Data.Bifunctor
 import Debug.Trace
+import Control.Exception (try, SomeException)
+import GHC.IO (catch)
 
 debug :: (Show a) => String -> a -> a
 debug s v = trace (s ++ ": " ++ show v) v
@@ -31,9 +33,15 @@ run :: (Print b, Print c) => Day a b c -> String -> IO ()
 run Day {parse', part1', part2'} s = do
   let parsed = parse' s
   putStr "Part 1: "
-  putStrLn $ string (part1' parsed)
+  catch (putStrLn $ string (part1' parsed)) f
   putStr "Part 2: "
-  putStrLn $ string (part2' parsed)
+  catch (putStrLn $ string (part2' parsed)) f
+  where
+    f :: SomeException -> IO ()
+    f e = do
+      putStr "Error - "
+      print e
+      return ()
 
 dummySolution :: String -> IO ()
 dummySolution = const (putStrLn "Dummy Solution")
