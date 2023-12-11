@@ -39,11 +39,6 @@ part2 p@(dirs, maps) = foldr leastCommonMultiple 1 toZ
     starts = filter (lastIs 'A') $ Map.keys maps
     toZ = map (\s -> path s (lastIs 'Z') p) starts
 
-    -- More complex more correct solution, I think. They never explicitly stated that it immediately cycles back.
-    -- tracePath start = summarize $ last $ takeWhile (\(pos, _, c) -> not (isJust c && fst (fromJust c) == pos)) $ scanl f (start, 0, Nothing) (cycle dirs)
-    -- f (pos, count, lastZ) dir = (getByDir pos dir, count + 1, if lastIs 'Z' pos then Just (pos, count) else lastZ)
-    -- summarize (_, count, Just (_, lastZ)) = (lastZ, count + 1 - lastZ)
-
     leastCommonMultiple :: Int -> Int -> Int
     leastCommonMultiple a b = (a * b) `div` greatestCommonDivisor a b
 
