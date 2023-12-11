@@ -3,9 +3,9 @@
 
 module Base where
 
+import Control.Exception (SomeException, try)
 import Data.Bifunctor
 import Debug.Trace
-import Control.Exception (try, SomeException)
 import GHC.IO (catch)
 
 debug :: (Show a) => String -> a -> a
@@ -23,6 +23,20 @@ y = snd
 
 x :: Pos -> Int
 x = fst
+
+data Dir = North | East | South | West deriving (Eq, Show)
+
+opposite :: Dir -> Dir
+opposite North = South
+opposite East = West
+opposite South = North
+opposite West = East
+
+vec :: Dir -> Pos
+vec North = (0, -1)
+vec East = (1, 0)
+vec South = (0, 1)
+vec West = (-1, 0)
 
 tuplify :: [a] -> (a, a)
 tuplify [a, b] = (a, b)

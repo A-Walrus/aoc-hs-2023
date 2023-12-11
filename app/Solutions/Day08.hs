@@ -1,6 +1,6 @@
 module Solutions.Day08 (solution, part1, part2, parse) where
 
-import Base
+import Base hiding (Dir)
 import Data.List
 import qualified Data.Map as Map
 import Data.Maybe (fromJust, isJust)
