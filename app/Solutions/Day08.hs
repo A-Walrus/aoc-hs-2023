@@ -3,6 +3,7 @@ module Solutions.Day08 (solution, part1, part2, parse) where
 import Base
 import Data.List
 import qualified Data.Map as Map
+import Data.Maybe (fromJust, isJust)
 
 solution :: String -> IO ()
 solution = run (Day parse part1 part2)
@@ -23,10 +24,31 @@ parse s = (map parseDir f, Map.fromList $ map parseLine xs)
     parseDir 'R' = R
 
 part1 :: Parsed -> Int
-part1 (dirs, map) = 1 + snd (last $ takeWhile ((/= "ZZZ") . fst) $ scanl (\(pos, count) dir -> (getByDir pos dir, count + 1)) ("AAA", 0) (cycle dirs))
+part1  = path "AAA" (=="ZZZ")
+
+
+path start endCondition (dirs,maps)= 1 + snd (last $ takeWhile (not . endCondition . fst) $ scanl (\(pos, count) dir -> (getByDir pos dir, count + 1)) (start, 0) (cycle dirs))
   where
-    getByDir pos L = fst $ map Map.! pos
-    getByDir pos R = snd $ map Map.! pos
+    getByDir pos L = fst $ maps Map.! pos
+    getByDir pos R = snd $ maps Map.! pos
 
 part2 :: Parsed -> Int
-part2 = undefined
+part2 p@(dirs, maps) = foldr leastCommonMultiple 1 toZ
+  where
+    lastIs c = (== c) . last
+    starts = filter (lastIs 'A') $ Map.keys maps
+    toZ = map (\s -> path s (lastIs 'Z') p) starts
+
+    -- More complex more correct solution, I think. They never explicitly stated that it immediately cycles back.
+    -- tracePath start = summarize $ last $ takeWhile (\(pos, _, c) -> not (isJust c && fst (fromJust c) == pos)) $ scanl f (start, 0, Nothing) (cycle dirs)
+    -- f (pos, count, lastZ) dir = (getByDir pos dir, count + 1, if lastIs 'Z' pos then Just (pos, count) else lastZ)
+    -- summarize (_, count, Just (_, lastZ)) = (lastZ, count + 1 - lastZ)
+
+    leastCommonMultiple :: Int -> Int -> Int
+    leastCommonMultiple a b = (a * b) `div` greatestCommonDivisor a b
+
+    greatestCommonDivisor :: Int -> Int -> Int
+    greatestCommonDivisor a b = euclid (max a b) (min a b)
+      where
+        euclid a 0 = a
+        euclid a b = euclid b (a `mod` b)
