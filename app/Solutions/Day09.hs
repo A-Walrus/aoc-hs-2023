@@ -17,7 +17,13 @@ part1 = sum . map nextVal
     nextVal l
       | all (==0) l = 0
       | otherwise = last l + nextVal (diffs l)
-    diffs l = zipWith (-) (tail l) l
 
 part2 :: Parsed -> Int
-part2 = undefined
+part2 = sum . map prevVal
+  where
+    prevVal l
+      | all (==0) l = 0
+      | otherwise = head l - prevVal (diffs l)
+
+diffs :: [Int] -> [Int]
+diffs l = zipWith (-) (tail l) l
