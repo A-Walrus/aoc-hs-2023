@@ -27,7 +27,7 @@ y = snd
 x :: Pos -> Int
 x = fst
 
-data Dir = North | East | South | West deriving (Eq, Show)
+data Dir = North | East | South | West deriving (Eq, Show, Ord, Enum)
 
 opposite :: Dir -> Dir
 opposite North = South

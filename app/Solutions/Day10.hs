@@ -50,22 +50,22 @@ part2 :: Parsed -> Int
 part2 (start, ps) = length $ filter (`inside` North) spots
   where
     positions = Map.keys ps
-    min :: Pos
-    end :: Pos
-    min = (0, 0)
-    end = foldr (\(x1, y1) (x2, y2) -> (max x1 x2, max y1 y2)) min positions
+    topLeft :: Pos
+    bottomRight :: Pos
+    topLeft = foldr (\(x1, y1) (x2, y2) -> (min x1 x2, min y1 y2)) bottomRight loop
+    bottomRight = foldr (\(x1, y1) (x2, y2) -> (max x1 x2, max y1 y2)) (0,0) loop
 
-    spots = filter (`notElem` p) $ [(a, b) | a <- [x min .. x end], b <- [y min .. y end]]
+    spots = filter (`notElem` loop) $ [(a, b) | a <- [x topLeft .. x bottomRight], b <- [y topLeft.. y bottomRight]]
 
-    p = map fst $ path start ps
+    loop = map fst $ path start ps
 
-    pipes = Map.filterWithKey (\k _ -> k `elem` p) ps
+    pipes = Map.filterWithKey (\k _ -> k `elem` loop) ps
 
     inside pos dir = fst $ foldr f (False, Nothing) $ takeWhile inBounds $ map (add pos . scale (vec dir)) [1 ..]
       where
         f p acc@(a, b)
           | not (p `Map.member` pipes) = acc
-          | orthogonal dir == pipes Map.! p = (not a, Nothing)
+          | length inter == 2 = (not a, Nothing)
           | inter /= [] =
               if isNothing b
                 then (a, Just d)
@@ -78,4 +78,4 @@ part2 (start, ps) = length $ filter (`inside` North) spots
     orthogonal North = [East, West]
     orthogonal East = [South, North]
     orthogonal x = orthogonal (opposite x)
-    inBounds (a, b) = x min <= a && a <= x end && y min <= b && b <= y end
+    inBounds (a, b) = x topLeft <= a && a <= x bottomRight && y topLeft <= b && b <= y bottomRight
