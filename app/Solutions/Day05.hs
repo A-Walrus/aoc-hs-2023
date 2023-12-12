@@ -39,7 +39,7 @@ part1 (seeds, maps) = minimum $ map f seeds
 part2 :: Parsed -> Int
 part2 (s, maps) = minimum $ map fst f 
   where
-    seeds = debug "start" $ map (\[a, b] -> (a, b)) $ chunksOf 2 s
+    seeds = map (\[a, b] -> (a, b)) $ chunksOf 2 s
     f = foldl (\a b -> concatMap (process b) a) seeds maps
 
 process :: [Mapping] -> (Int, Int) -> [(Int, Int)]
