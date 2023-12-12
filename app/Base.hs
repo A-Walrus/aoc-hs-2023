@@ -18,6 +18,9 @@ type Pos = (Int, Int)
 add :: Pos -> Pos -> Pos
 add a = uncurry bimap (dMap (+) a)
 
+scale :: Pos -> Int -> Pos
+scale (x, y) n = (x * n, y * n)
+
 y :: Pos -> Int
 y = snd
 
