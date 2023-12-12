@@ -37,10 +37,10 @@ part1 (seeds, maps) = minimum $ map f seeds
       _ -> val
 
 part2 :: Parsed -> Int
-part2 (s, maps) = minimum $ map fst $ concatMap f seeds
+part2 (s, maps) = minimum $ map fst f 
   where
-    seeds = map (\[a, b] -> (a, b)) $ chunksOf 2 s
-    f seed = foldl (\a b -> concatMap (process b) a) [seed] maps
+    seeds = debug "start" $ map (\[a, b] -> (a, b)) $ chunksOf 2 s
+    f = foldl (\a b -> concatMap (process b) a) seeds maps
 
 process :: [Mapping] -> (Int, Int) -> [(Int, Int)]
 process mappings range = foldr (concatMap . process1) [range] mappings
