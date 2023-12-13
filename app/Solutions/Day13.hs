@@ -16,15 +16,17 @@ parse :: String -> Parsed
 parse = map lines . splitOn "\n\n"
 
 part1 :: Parsed -> Int
-part1 = sum . map mirrorVal
+part1 = sum . map (mirrorVal mirrored)
   where
-    mirrorLine area = (+1) <$> findIndex (uncurry mirrored) [splitAt p area | p <- [1 .. length area - 1]]
-
     mirrored a b = and $ zipWith (==) (reverse a) b
 
-    mirrorVal area = case mirrorLine area of
-      Just a -> 100 * a
-      Nothing -> fromJust (mirrorLine (transpose area))
-
 part2 :: Parsed -> Int
-part2 = undefined
+part2 = sum . map (mirrorVal almostMirrored)
+  where
+    almostMirrored a b = (== 1) $ length $ filter not $ concat $ zipWith (zipWith (==)) (reverse a) b
+
+mirrorLine f area = (+ 1) <$> findIndex (uncurry f) [splitAt p area | p <- [1 .. length area - 1]]
+
+mirrorVal f area = case mirrorLine f area of
+  Just a -> 100 * a
+  Nothing -> fromJust (mirrorLine f (transpose area))
