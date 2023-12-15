@@ -15,6 +15,7 @@ import qualified Solutions.Day10 as Day10
 import qualified Solutions.Day11 as Day11
 import qualified Solutions.Day12 as Day12
 import qualified Solutions.Day13 as Day13
+import qualified Solutions.Day14 as Day14
 import System.Environment
 import Text.Printf
 
@@ -32,7 +33,8 @@ days =
     Day10.solution,
     Day11.solution,
     Day12.solution,
-    Day13.solution
+    Day13.solution,
+    Day14.solution
   ]
 
 data Args
