@@ -1,6 +1,7 @@
 module Solutions.Day05 (solution, part1, part2, parse) where
 
 import Base
+import Control.Exception (assert)
 import Data.List
 import Data.List.Split (chunksOf, splitWhen)
 import Data.Maybe (mapMaybe)
@@ -12,6 +13,8 @@ solution = run (Day parse part1 part2)
 type Parsed = ([Int], [[Mapping]])
 
 data Mapping = Mapping {destStart :: Int, sourceStart :: Int, rangeLen :: Int} deriving (Show)
+
+type Range = (Int, Int)
 
 parse :: String -> Parsed
 parse s = (seeds, maps)
@@ -37,16 +40,21 @@ part1 (seeds, maps) = minimum $ map f seeds
       _ -> val
 
 part2 :: Parsed -> Int
-part2 (s, maps) = minimum $ map fst f 
+part2 (s, maps) = minimum $ map fst f
   where
     seeds = map (\[a, b] -> (a, b)) $ chunksOf 2 s
     f = foldl (\a b -> concatMap (process b) a) seeds maps
 
-process :: [Mapping] -> (Int, Int) -> [(Int, Int)]
-process mappings range = foldr (concatMap . process1) [range] mappings
+process :: [Mapping] -> Range -> [Range]
+process mappings range = fast
+  where
+    fast = uncurry (++) $ foldr f ([], [range]) mappings
+    f mapping (mapped, remaining) = (mapped ++ newMapped, newRemaining)
+      where
+        (newMapped, newRemaining) = foldr ((\(a1, b1) (a2, b2) -> (a1 ++ a2, b1 ++ b2)) . process1 mapping) ([], []) remaining
 
-process1 :: Mapping -> (Int, Int) -> [(Int, Int)]
-process1 (Mapping dest mStart mLen) (rStart, rLen) = if oLen > 0 then overlap : before ++ after else [(rStart, rLen)]
+process1 :: Mapping -> Range -> ([Range], [Range])
+process1 (Mapping dest mStart mLen) (rStart, rLen) = if oLen > 0 then ([overlap], before ++ after) else ([], [(rStart, rLen)])
   where
     mEnd = mStart + mLen
     rEnd = rStart + rLen
