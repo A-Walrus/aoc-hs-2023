@@ -40,7 +40,8 @@ executable aoc-hs2023
                    Solutions.Day12,
                    Solutions.Day13,
                    Solutions.Day14,
-                   Solutions.Day15
+                   Solutions.Day15,
+                   Solutions.Day16
 
 
     -- LANGUAGE extensions used by modules in this package.
