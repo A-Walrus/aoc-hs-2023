@@ -19,6 +19,8 @@ parse = map f . lines
     parseTile '#' = Black
     parseTile '?' = Unknown
 
+
+-- Attempted 6902, it was too low.
 part1 :: Parsed -> Int
 part1 = sum . map (uncurry numOptions)
   where
