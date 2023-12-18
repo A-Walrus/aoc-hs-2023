@@ -20,7 +20,22 @@ type State = Map.Map (Pos, WalkState) Int
 type Entry = ((Pos, WalkState), Int)
 
 part1 :: Parsed -> Int
-part1 grid = minimum atEnd
+part1 = solve check 0
+  where
+    check c dir d = d /= opposite dir && (d /= dir || c < 3)
+
+part2 :: Parsed -> Int
+part2 = solve check 4
+  where
+    -- check c dir d = d /= opposite dir && (d /= dir || c < 10)
+    check c dir d =
+      d /= opposite dir
+        && if c < 4
+          then d == dir
+          else c < 10 || d /= dir
+
+solve :: (Int -> Dir -> Dir -> Bool) -> Int -> Parsed -> Int
+solve check minCount grid = minimum atEnd
   where
     width = length (head grid)
     height = length grid
@@ -32,7 +47,7 @@ part1 grid = minimum atEnd
     initial = Map.fromList [(((0, 0), (South, 0)), 0)] -- could be any `Dir`
     i = iterate f (initial, Map.empty)
     final = uncurry Map.union $ last $ takeWhile (not . Map.null . fst) i
-    atEnd = map snd $ filter (\((p, _), _) -> p == end) $ Map.assocs final
+    atEnd = map snd $ filter (\((p, (_, c)), _) -> p == end && c >= minCount) $ Map.assocs final
 
     f :: (State, State) -> (State, State)
     f (new, old) = (new', old')
@@ -44,13 +59,10 @@ part1 grid = minimum atEnd
     step :: Entry -> [Entry]
     step ((pos, (dir, count)), heat) = map f possibleDirs
       where
-        possibleDirs = filter (inBounds . add pos . vec) $ filter (\d -> d /= opposite dir && (d /= dir || count < 3)) [North, West, South, East]
+        possibleDirs = filter (inBounds . add pos . vec) $ filter ((count == 0 ||) . check count dir) [North, West, South, East]
 
         f d = ((newPos, (d, newCount)), newHeat)
           where
             newPos = add (vec d) pos
             newHeat = heat + (grid !! y newPos !! x newPos)
             newCount = if d == dir then count + 1 else 1
-
-part2 :: Parsed -> Int
-part2 = undefined
