@@ -35,10 +35,11 @@ part1 grid = minimum atEnd
     atEnd = map snd $ filter (\((p, _), _) -> p == end) $ Map.assocs final
 
     f :: (State, State) -> (State, State)
-    f (new, old) = (newNew, Map.unionWith min x old)
+    f (new, old) = (new', old')
       where
-        x = Map.fromList $ concatMap step $ Map.assocs new
-        newNew = Map.difference x old
+        x = Map.fromListWith min $ concatMap step $ Map.assocs new
+        old' = Map.unionWith min new old
+        new' = Map.differenceWith (\a b -> if a < b then Just a else Nothing) x old'
 
     step :: Entry -> [Entry]
     step ((pos, (dir, count)), heat) = map f possibleDirs
