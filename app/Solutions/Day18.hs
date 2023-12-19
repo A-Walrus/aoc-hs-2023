@@ -21,11 +21,18 @@ parse = map ((\[dir, count, color] -> (readDir dir, read count, readColor color)
     readColor = take 6 . drop 2
 
 part1 :: Parsed -> Int
-part1 plan = length perimeter + length inside
+part1 p = solve plan
+  where
+    plan = map (\(a,b,_) -> (a,b)) p
+
+
+
+solve :: [(Dir,Int)] -> Int
+solve plan = length perimeter + length inside
   where
     origin = (0, 0) -- arbitrary
     perimeter = Set.fromList $ scanl (\pos dir -> add pos (vec dir)) origin moves
-    moves = concatMap (\(dir, count, _) -> replicate count dir) plan
+    moves = concatMap (\(dir, count) -> replicate count dir) plan
     bot_right = Set.fold (\(x1, y1) (x2, y2) -> (max x1 x2, max y1 y2)) origin perimeter
     top_left = Set.fold (\(x1, y1) (x2, y2) -> (min x1 x2, min y1 y2)) origin perimeter
 
@@ -42,5 +49,17 @@ part1 plan = length perimeter + length inside
 
     spread pos = filter (`Set.notMember` perimeter) $ map (add pos . vec) [North, South, East, West]
 
+
 part2 :: Parsed -> Int
-part2 = undefined
+part2 p = solve plan
+  where
+    plan = map (\(_, _, x) -> parseColor x) p
+
+parseColor :: String -> (Dir, Int)
+parseColor color = (dir last, read ("0x" ++ dist))
+  where
+    (dist, last) = splitAt 5 color
+    dir "0" = East
+    dir "1" = South
+    dir "2" = West
+    dir "3" = North
