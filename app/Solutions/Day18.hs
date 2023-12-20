@@ -23,32 +23,48 @@ parse = map ((\[dir, count, color] -> (readDir dir, read count, readColor color)
 part1 :: Parsed -> Int
 part1 p = solve plan
   where
-    plan = map (\(a,b,_) -> (a,b)) p
+    plan = map (\(a, b, _) -> (a, b)) p
 
+data Chirality = CW | CCW deriving (Eq)
 
-
-solve :: [(Dir,Int)] -> Int
-solve plan = length perimeter + length inside
+solve :: [(Dir, Int)] -> Int
+solve plan = area plan
   where
-    origin = (0, 0) -- arbitrary
-    perimeter = Set.fromList $ scanl (\pos dir -> add pos (vec dir)) origin moves
-    moves = concatMap (\(dir, count) -> replicate count dir) plan
-    bot_right = Set.fold (\(x1, y1) (x2, y2) -> (max x1 x2, max y1 y2)) origin perimeter
-    top_left = Set.fold (\(x1, y1) (x2, y2) -> (min x1 x2, min y1 y2)) origin perimeter
+    turning = fst $ foldl (\(acc, prev) dir -> (acc + turn prev dir, dir)) (turn (last dirs) (head dirs), head dirs) (tail dirs)
+    chirality = case turning of
+      4 -> CCW
+      -4 -> CW
+    dirs = map fst plan
 
-    start :: Pos
-    start = (1, 1) -- HACK this only works for this specific input.
-
-    inside = uncurry Set.union $ last $ takeWhile (not . Set.null . fst) $ iterate f (Set.singleton start, Set.empty)
-
-    f (new, old) = (new', old')
+    area :: [(Dir, Int)] -> Int
+    area l@[a, b, c, d] = (snd a + 1) * (snd b + 1)
+    area l@(a : b : c : d : xs) =
+      if fst a == fst c
+        then changed + area rest
+        else area ((b : c : d : xs) ++ [a])
       where
-        s = Set.fromList $ concatMap spread $ Set.toList new
-        new' = Set.difference s old'
-        old' = Set.union new old
+        rest =
+          if snd (combine b d) /= 0
+            then combine a c : combine b d : xs
+            else combine (combine a c) (head xs) : tail xs
+        changed =
+          if sign
+            then snd b * (snd c + 1)
+            else ((-1) * snd b * snd c) + fix
+        fix = if fst b /= fst d then snd d else 0
+        sign = (turn (fst a) (fst b) == 1) == (chirality == CW)
 
-    spread pos = filter (`Set.notMember` perimeter) $ map (add pos . vec) [North, South, East, West]
+    combine :: (Dir, Int) -> (Dir, Int) -> (Dir, Int)
+    combine a b
+      | fst a == fst b = (fst a, snd a + snd b)
+      | fst a == opposite (fst b) = if snd a > snd b then (fst a, snd a - snd b) else (fst b, snd b - snd a)
+      | otherwise = undefined
 
+    turn North West = 1
+    turn West South = 1
+    turn South East = 1
+    turn East North = 1
+    turn a b = -turn a (opposite b)
 
 part2 :: Parsed -> Int
 part2 p = solve plan
